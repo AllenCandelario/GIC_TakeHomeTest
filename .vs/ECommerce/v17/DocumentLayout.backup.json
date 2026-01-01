@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\chris\\Documents\\Code\\Job\\Tek_GIC\\TakeHomeTest\\ECommerce\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{408D1FF3-C413-40DC-9267-C1944B31A5C1}|ECommerce.UserService\\ECommerce.UserService.csproj|c:\\users\\chris\\documents\\code\\job\\tek_gic\\takehometest\\ecommerce\\ecommerce.userservice\\ecommerce.userservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{408D1FF3-C413-40DC-9267-C1944B31A5C1}|ECommerce.UserService\\ECommerce.UserService.csproj|solutionrelative:ecommerce.userservice\\ecommerce.userservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AF34CC58-8002-46F5-81C7-D35B87F05B34}|ECommerce.OrderService\\ECommerce.OrderService.csproj|c:\\users\\chris\\documents\\code\\job\\tek_gic\\takehometest\\ecommerce\\ecommerce.orderservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AF34CC58-8002-46F5-81C7-D35B87F05B34}|ECommerce.OrderService\\ECommerce.OrderService.csproj|solutionrelative:ecommerce.orderservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ECommerce.UserService",
+              "DocumentMoniker": "C:\\Users\\chris\\Documents\\Code\\Job\\Tek_GIC\\TakeHomeTest\\ECommerce\\ECommerce.UserService\\ECommerce.UserService.csproj",
+              "RelativeDocumentMoniker": "ECommerce.UserService\\ECommerce.UserService.csproj",
+              "ToolTip": "C:\\Users\\chris\\Documents\\Code\\Job\\Tek_GIC\\TakeHomeTest\\ECommerce\\ECommerce.UserService\\ECommerce.UserService.csproj",
+              "RelativeToolTip": "ECommerce.UserService\\ECommerce.UserService.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-01T22:16:30.865Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\chris\\Documents\\Code\\Job\\Tek_GIC\\TakeHomeTest\\ECommerce\\ECommerce.OrderService\\Program.cs",
+              "RelativeDocumentMoniker": "ECommerce.OrderService\\Program.cs",
+              "ToolTip": "C:\\Users\\chris\\Documents\\Code\\Job\\Tek_GIC\\TakeHomeTest\\ECommerce\\ECommerce.OrderService\\Program.cs",
+              "RelativeToolTip": "ECommerce.OrderService\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-01T22:14:26.597Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+services:
+  kafka:
+    image: apache/kafka:latest
+    container_name: ecommerce-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    ports:
+      - "9092:9092"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: ecommerce-kafka-ui
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    ports:
+      - "8085:8080"
+
+  userservice:
+    build:
+      context: .
+      dockerfile: ECommerce.UserService/Dockerfile
+    container_name: ecommerce-userservice
+    depends_on:
+      - kafka
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Kafka__BootstrapServers=kafka:9092
+      - Kafka__UserTopic=ecommerce.user.v1
+      - Kafka__OrderTopic=ecommerce.order.v1
+      - Kafka__GroupId=ecommerce.userservice
+    ports:
+      - "5001:8080"
+
+  orderservice:
+    build:
+      context: .
+      dockerfile: ECommerce.OrderService/Dockerfile
+    container_name: ecommerce-orderservice
+    depends_on:
+      - kafka
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Kafka__BootstrapServers=kafka:9092
+      - Kafka__UserTopic=ecommerce.user.v1
+      - Kafka__OrderTopic=ecommerce.order.v1
+      - Kafka__GroupId=ecommerce.orderservice
+    ports:
+      - "5002:8080"
+
+  frontend:
+    build:
+      context: ./ecommerce.ui
+      dockerfile: Dockerfile
+    container_name: ecommerce-frontend
+    depends_on:
+      - userservice
+      - orderservice
+    environment:
+      - VITE_USER_API_BASE_URL=http://localhost:5001
+      - VITE_ORDER_API_BASE_URL=http://localhost:5002
+    ports:
+      - "5173:5173"

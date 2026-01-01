@@ -1,0 +1,26 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.csproj.user
+*.sln.docstates
+*.vssscc
+*.vspscc
+*.vsscc
+*.pdb
+*.obj
+*.exe
+*.dll
+*.exp
+*.lib
+*.ncb
+*.opensdf
+*.sdf
+*.cache
+*.VC.db
+*.VC.VC.opendb
+ipch/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
