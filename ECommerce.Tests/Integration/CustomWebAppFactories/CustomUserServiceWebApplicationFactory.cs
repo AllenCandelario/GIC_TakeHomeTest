@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using ECommerce.UserService.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ECommerce.Tests.Integration
+namespace ECommerce.Tests.Integration.CustomWebAppFactories
 {
-    public sealed  class CustomUserServiceWebApplicationFactory : WebApplicationFactory<UserService.Program>
+    public sealed class CustomUserServiceWebApplicationFactory : WebApplicationFactory<UserService.Program>
     {
         private readonly InMemoryDatabaseRoot _dbRoot = new();
 
