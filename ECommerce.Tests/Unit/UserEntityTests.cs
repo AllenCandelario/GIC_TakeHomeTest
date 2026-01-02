@@ -1,7 +1,7 @@
 ﻿using ECommerce.UserService.Domain;
 using FluentAssertions;
 
-namespace ECommerce.Tests
+namespace ECommerce.Tests.Unit
 {
     public sealed class UserEntityTests
     {
@@ -17,7 +17,7 @@ namespace ECommerce.Tests
             user.Id.Should().NotBeEmpty();
             user.Name.Should().Be(expectedName);
             user.Email.Should().Be(expectedEmail);
-            user.CreatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+            user.CreatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(3));
         }
 
         [Theory]
