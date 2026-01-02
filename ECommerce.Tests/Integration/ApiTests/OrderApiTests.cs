@@ -9,7 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Tests.Integration
+namespace ECommerce.Tests.Integration.ApiTests
 {
     public sealed class OrderApiTests : IClassFixture<CustomOrderServiceWebApplicationFactory>
     {

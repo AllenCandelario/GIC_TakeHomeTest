@@ -8,9 +8,9 @@ namespace ECommerce.UserService.API.Controllers
     [Route("api/v1/users")]
     public sealed class UserController : ControllerBase
     {
-        private readonly IUserQueryHandler _queryHandler;
+        private readonly IUserService _queryHandler;
         
-        public UserController(IUserQueryHandler queryHandler)
+        public UserController(IUserService queryHandler)
         {
             _queryHandler = queryHandler;
         }

@@ -40,10 +40,14 @@ services:
       - kafka
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kafka__BootstrapServers=kafka:9092
-      - Kafka__UserTopic=ecommerce.user.v1
-      - Kafka__OrderTopic=ecommerce.order.v1
-      - Kafka__GroupId=ecommerce.userservice
+      - Kafka__Consumer__BootstrapServers=kafka:9092
+      - Kafka__Consumer__GroupId=user-service
+      - Kafka__Consumer__Topics__0=order.created.v1
+      - Kafka__Producer__BootstrapServers=kafka:9092
+      - Kafka__Producer__ClientId=user-service
+      - Kafka__Topics__UserCreatedTopic=user.created.v1
+      - Kafka__Topics__OrderCreatedTopic=order.created.v1
+      - Kafka__Topics__DlqTopic=user-service.dlq.v1
     ports:
       - "5001:8080"
 
@@ -56,10 +60,14 @@ services:
       - kafka
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Kafka__BootstrapServers=kafka:9092
-      - Kafka__UserTopic=ecommerce.user.v1
-      - Kafka__OrderTopic=ecommerce.order.v1
-      - Kafka__GroupId=ecommerce.orderservice
+      - Kafka__Consumer__BootstrapServers=kafka:9092
+      - Kafka__Consumer__GroupId=order-service
+      - Kafka__Consumer__Topics__0=user.created.v1
+      - Kafka__Producer__BootstrapServers=kafka:9092
+      - Kafka__Producer__ClientId=order-service
+      - Kafka__Topics__UserCreatedTopic=user.created.v1
+      - Kafka__Topics__OrderCreatedTopic=order.created.v1
+      - Kafka__Topics__DlqTopic=order-service.dlq.v1
     ports:
       - "5002:8080"
 

@@ -2,6 +2,10 @@
 using ECommerce.OrderService.Application.Interfaces;
 using ECommerce.OrderService.Application.Services;
 using ECommerce.OrderService.Infrastructure.Persistence;
+using ECommerce.Shared.Kafka.Consumer;
+using ECommerce.Shared.Kafka.Interfaces;
+using ECommerce.Shared.Kafka.Options;
+using ECommerce.Shared.Kafka.Producer;
 using ECommerce.Shared.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -31,7 +35,34 @@ namespace ECommerce.OrderService
             // DI services
             builder.Services.AddDbContext<OrderDbContext>(options => options.UseInMemoryDatabase("OrdersDb"));
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IOrderQueryHandler, OrderQueryHandler>();
+            builder.Services.AddScoped<IOrderService, Application.Services.OrderService>();
+
+            // Kafka
+            builder.Services.AddOptions<KafkaConsumerConfigOptions>()
+                .Bind(builder.Configuration.GetSection("Kafka:Consumer"))
+                .Validate(o =>
+                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
+                    !string.IsNullOrWhiteSpace(o.GroupId) &&
+                    o.Topics is { Length: > 0 } &&
+                    o.Topics.All(t => !string.IsNullOrWhiteSpace(t)),
+                    "Kafka:Consumer config invalid")
+                .ValidateOnStart();
+
+            builder.Services.AddOptions<KafkaProducerConfigOptions>()
+                .Bind(builder.Configuration.GetSection("Kafka:Producer"))
+                .Validate(o =>
+                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
+                    !string.IsNullOrWhiteSpace(o.ClientId),
+                    "Kafka:Producer config invalid")
+                .ValidateOnStart();
+
+            // Kafka producer singleton
+            builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
+
+            // Kafka consumer hosted service
+            builder.Services.AddHostedService<KafkaConsumer>();
+
+            builder.Services.AddKeyedScoped<IKafkaEventHandler, UserCreatedEventHandler>("user.created.v1");
 
             // CORS
             builder.Services.AddCors(options =>
