@@ -2,6 +2,7 @@
 using FluentAssertions;
 using System.Net.Http.Json;
 using System.Net;
+using ECommerce.Tests.Integration.CustomWebAppFactories;
 
 namespace ECommerce.Tests.Integration
 {
@@ -54,7 +55,7 @@ namespace ECommerce.Tests.Integration
             var created = await post.Content.ReadFromJsonAsync<UserResponseDto>();
 
             // Act
-            var get = await _client.GetAsync($"/api/v1/users/{created.Id}");
+            var get = await _client.GetAsync($"/api/v1/users/{created!.Id}");
 
             // Assert
             get.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -86,7 +87,6 @@ namespace ECommerce.Tests.Integration
         {
             // Act
             var response = await _client.PostAsJsonAsync("/api/v1/users", new { name = "", email = "not-email" });
-            // TODO: Furnish with more bad cases
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
