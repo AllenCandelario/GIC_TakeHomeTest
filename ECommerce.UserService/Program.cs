@@ -47,6 +47,8 @@ namespace ECommerce.UserService
 
             var app = builder.Build();
 
+            app.UseSerilogRequestLogging();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

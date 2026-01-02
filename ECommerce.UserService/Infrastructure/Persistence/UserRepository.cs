@@ -36,7 +36,7 @@ namespace ECommerce.UserService.Infrastructure.Persistence
 
         public Task SaveChangesAsync(CancellationToken ct)
         {
-            return _dbContext.SaveChangesAsync();
+            return _dbContext.SaveChangesAsync(ct);
         }
 
     }

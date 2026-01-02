@@ -13,7 +13,7 @@ namespace ECommerce.UserService.Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<User?> AddUserAsync(string name, string email, CancellationToken ct)
+        public async Task<User> AddUserAsync(string name, string email, CancellationToken ct)
         {
             // service validation - existing email
             var userEmailCheck = await _userRepository.GetByEmailAsync(email, ct);
@@ -35,7 +35,7 @@ namespace ECommerce.UserService.Application.Services
             return users;
         }
 
-        public async Task<User?> GetUserByIdAsync(Guid userId, CancellationToken ct)
+        public async Task<User> GetUserByIdAsync(Guid userId, CancellationToken ct)
         {
             var user = await _userRepository.GetByIdAsync(userId, ct);
             if (user is null)
