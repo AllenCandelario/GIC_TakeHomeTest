@@ -1,4 +1,5 @@
 ﻿using ECommerce.OrderService.Infrastructure.Persistence;
+using ECommerce.Shared.Kafka.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +20,10 @@ namespace ECommerce.Tests.Integration.CustomWebAppFactories
                 // remove existing registrations
                 services.RemoveAll(typeof(DbContextOptions<OrderDbContext>));
                 services.RemoveAll(typeof(OrderDbContext));
+                services.RemoveAll(typeof(IKafkaProducer));
 
                 services.AddDbContext<OrderDbContext>(options => options.UseInMemoryDatabase("OrdersDb_Test", _dbRoot));
+                services.AddSingleton<IKafkaProducer, NoOpKafkaProducer>();
             });
         }
     }

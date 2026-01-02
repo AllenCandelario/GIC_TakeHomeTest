@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
 using ECommerce.UserService.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
+using ECommerce.Shared.Kafka.Interfaces;
 
 namespace ECommerce.Tests.Integration.CustomWebAppFactories
 {
@@ -19,9 +20,11 @@ namespace ECommerce.Tests.Integration.CustomWebAppFactories
                 // remove existing registrations
                 services.RemoveAll(typeof(DbContextOptions<UserDbContext>));
                 services.RemoveAll(typeof(UserDbContext));
+                services.RemoveAll(typeof(IKafkaProducer));
 
                 // add db context using shared root
                 services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("UsersDb_Test", _dbRoot));
+                services.AddSingleton<IKafkaProducer, NoOpKafkaProducer>();
             });
         }
     }

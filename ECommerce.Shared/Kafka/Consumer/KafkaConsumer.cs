@@ -129,7 +129,7 @@ namespace ECommerce.Shared.Kafka.Consumer
             using var scope = _scopeFactory.CreateScope();
             var sp = scope.ServiceProvider;
 
-            var handler = sp.GetRequiredKeyedService<IKafkaEventHandler>(topic);
+            var handler = sp.GetKeyedService<IKafkaEventHandler>(topic);
             if (handler is null)
             {
                 _logger.LogWarning("No handler registered for topic {Topic}. Skipping.", topic);

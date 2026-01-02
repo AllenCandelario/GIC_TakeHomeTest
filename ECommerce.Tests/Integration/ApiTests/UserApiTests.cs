@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using System.Net;
 using ECommerce.Tests.Integration.CustomWebAppFactories;
 
-namespace ECommerce.Tests.Integration
+namespace ECommerce.Tests.Integration.ApiTests
 {
     public sealed class UserApiTests : IClassFixture<CustomUserServiceWebApplicationFactory>
     {
