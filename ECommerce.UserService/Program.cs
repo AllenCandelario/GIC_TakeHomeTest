@@ -4,6 +4,10 @@ using ECommerce.UserService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using ECommerce.UserService.Application.Interfaces;
 using ECommerce.UserService.Application.Services;
+using ECommerce.Shared.Kafka.Consumer;
+using ECommerce.Shared.Kafka.Options;
+using ECommerce.Shared.Kafka.Interfaces;
+using ECommerce.Shared.Kafka.Producer;
 
 
 namespace ECommerce.UserService
@@ -32,6 +36,33 @@ namespace ECommerce.UserService
             builder.Services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("UsersDb"));
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserQueryHandler, UserQueryHandler>();
+
+            // Kafka
+            builder.Services.AddOptions<KafkaConsumerConfigOptions>()
+                .Bind(builder.Configuration.GetSection("Kafka:Consumer"))
+                .Validate(o =>
+                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
+                    !string.IsNullOrWhiteSpace(o.GroupId) &&
+                    o.Topics is { Length: > 0 } &&
+                    o.Topics.All(t => !string.IsNullOrWhiteSpace(t)),
+                    "Kafka:Consumer config invalid")
+                .ValidateOnStart();
+
+            builder.Services.AddOptions<KafkaProducerConfigOptions>()
+                .Bind(builder.Configuration.GetSection("Kafka:Producer"))
+                .Validate(o =>
+                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
+                    !string.IsNullOrWhiteSpace(o.ClientId),
+                    "Kafka:Producer config invalid")
+                .ValidateOnStart();
+
+            // Kafka producer singleton
+            builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
+
+            // Kafka consumer hosted service
+            builder.Services.AddHostedService<KafkaConsumer>();
+
+            builder.Services.AddKeyedScoped<IKafkaEventHandler, OrderCreatedEventHandler>("order.created.v1");
 
             // CORS
             builder.Services.AddCors(options =>
