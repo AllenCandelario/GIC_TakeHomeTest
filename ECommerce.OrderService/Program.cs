@@ -35,7 +35,7 @@ namespace ECommerce.OrderService
             // DI services
             builder.Services.AddDbContext<OrderDbContext>(options => options.UseInMemoryDatabase("OrdersDb"));
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IOrderQueryHandler, OrderQueryHandler>();
+            builder.Services.AddScoped<IOrderService, Application.Services.OrderService>();
 
             // Kafka
             builder.Services.AddOptions<KafkaConsumerConfigOptions>()

@@ -6,13 +6,13 @@ using ECommerce.Shared.Kafka.Interfaces;
 
 namespace ECommerce.OrderService.Application.Services
 {
-    public sealed class OrderQueryHandler : IOrderQueryHandler
+    public sealed class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IKafkaProducer _kafkaProducer;
         private readonly string _orderCreatedTopic;
 
-        public OrderQueryHandler(IOrderRepository orderRepository, IKafkaProducer kafkaProducer, IConfiguration config)
+        public OrderService(IOrderRepository orderRepository, IKafkaProducer kafkaProducer, IConfiguration config)
         {
             _orderRepository = orderRepository;
             _kafkaProducer = kafkaProducer;
@@ -22,9 +22,9 @@ namespace ECommerce.OrderService.Application.Services
 
         public async Task<Order> AddOrderAsync(Guid userId, string product, int quantity, decimal price, CancellationToken ct)
         {
-            // service validation??
-
+            // domain validation + trim whitespaces
             var order = new Order(userId, product, quantity, price);
+
             await _orderRepository.AddAsync(order, ct);
             await _orderRepository.SaveChangesAsync(ct);
 

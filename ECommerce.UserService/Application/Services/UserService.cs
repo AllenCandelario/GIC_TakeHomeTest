@@ -6,13 +6,13 @@ using ECommerce.Shared.Kafka.Contracts;
 
 namespace ECommerce.UserService.Application.Services
 {
-    public sealed class UserQueryHandler : IUserQueryHandler
+    public sealed class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IKafkaProducer _kafkaProducer;
         private readonly string _userCreatedTopic;
 
-        public UserQueryHandler(IUserRepository userRepository, IKafkaProducer kafkaProducer, IConfiguration config)
+        public UserService(IUserRepository userRepository, IKafkaProducer kafkaProducer, IConfiguration config)
         {
             _userRepository = userRepository;
             _kafkaProducer = kafkaProducer;
@@ -21,14 +21,16 @@ namespace ECommerce.UserService.Application.Services
 
         public async Task<User> AddUserAsync(string name, string email, CancellationToken ct)
         {
+            // domain validation + trim whitespaces first
+            var user = new User(name, email);
+
             // service validation - existing email
-            var userEmailCheck = await _userRepository.GetByEmailAsync(email, ct);
+            var userEmailCheck = await _userRepository.GetByEmailAsync(user.Email, ct);
             if (userEmailCheck is not null)
             {
                 throw new ConflictException("Email already exists");
             }
 
-            var user = new User(name, email);
             await _userRepository.AddAsync(user, ct);
             await _userRepository.SaveChangesAsync(ct);
 

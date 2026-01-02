@@ -15,7 +15,17 @@ namespace ECommerce.UserService.Application.Services
 
         public Task HandleAsync(string key, string raw, CancellationToken ct)
         {
-            var kafkaEvent = JsonSerializer.Deserialize<KafkaEvent<OrderCreatedEventV1>>(raw);
+            KafkaEvent<OrderCreatedEventV1>? kafkaEvent;
+            try
+            {
+                kafkaEvent = JsonSerializer.Deserialize<KafkaEvent<OrderCreatedEventV1>>(raw);
+            }
+            catch (JsonException jEx)
+            {
+                _logger.LogWarning(jEx, "Invalid OrderCreated event JSON. Key={Key}", key);
+                return Task.CompletedTask;
+            }
+
             if (kafkaEvent?.Data is null)
             {
                 _logger.LogWarning("Invalid OrderCreated event payload. Key={Key}", key);

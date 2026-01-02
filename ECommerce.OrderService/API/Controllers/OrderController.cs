@@ -11,9 +11,9 @@ namespace ECommerce.OrderService.API.Controllers
 
     public sealed class OrderController : ControllerBase
     {
-        private readonly IOrderQueryHandler _queryHandler;
+        private readonly IOrderService _queryHandler;
 
-        public OrderController(IOrderQueryHandler queryHandler)
+        public OrderController(IOrderService queryHandler)
         {
             _queryHandler = queryHandler;
         }
@@ -31,7 +31,7 @@ namespace ECommerce.OrderService.API.Controllers
         {
             var orders = await _queryHandler.GetAllOrdersByUserIdAsync(userId, ct);
             var response = orders.Select(o => new OrderResponseDto(o.Id, o.UserId, o.Product, o.Quantity, o.Price, o.CreatedAtUtc)).ToList();
-            return Ok(response); ;
+            return Ok(response);
         }
 
         [HttpGet("{orderId:guid}")]

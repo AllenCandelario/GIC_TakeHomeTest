@@ -35,7 +35,7 @@ namespace ECommerce.UserService
             // DI services
             builder.Services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("UsersDb"));
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserQueryHandler, UserQueryHandler>();
+            builder.Services.AddScoped<IUserService, Application.Services.UserService>();
 
             // Kafka
             builder.Services.AddOptions<KafkaConsumerConfigOptions>()
