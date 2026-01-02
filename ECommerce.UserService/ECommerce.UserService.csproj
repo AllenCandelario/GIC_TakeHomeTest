@@ -21,9 +21,4 @@
     <ProjectReference Include="..\ECommerce.Shared\ECommerce.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="API\" />
-    <Folder Include="Application\" />
-  </ItemGroup>
-
 </Project>
