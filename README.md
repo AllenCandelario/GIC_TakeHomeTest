@@ -135,13 +135,21 @@ Serilog is used across all services
 - .NET 8 SDK (for localized testing)
 - Docker & Docker Compose
 
-## Start Everything
-You may run the following command from the project root (/ECommerce)
+## Clone
 ```
-docker-compose up --build
+git clone https://github.com/AllenCandelario/GIC_TakeHomeTest.git
+cd GIC_TakeHomeTest
+```
+
+## Start Everything
+You may run the following command from the project root (/GIC_TakeHomeTest)
+```
+docker compose up --build -d
 ```
 
 ## Access
+You may change the ports in the docker compose file
+
 - User Service: http://localhost:5001/swagger
 - Order Service: http://localhost:5002/swagger
 - Kafka UI (Provectus): http://localhost:8085
@@ -157,10 +165,17 @@ You may refer to either the Kafka UI to view the published/consumed messages, or
 <img width="821" height="19" alt="image" src="https://github.com/user-attachments/assets/04b1f419-a392-4140-ad50-6bfffb50bf0a" />
 
 ### 3) Testing
-You may run the following command from the project root (/ECommerce)
+You may run the following command from the project root (/GIC_TakeHomeTest)
 ```
 cd ECommerce.Tests
 dotnet test
+```
+
+## Stop Everything
+## Start Everything
+You may run the following command from the project root (/GIC_TakeHomeTest)
+```
+docker compose down
 ```
 
 ---
