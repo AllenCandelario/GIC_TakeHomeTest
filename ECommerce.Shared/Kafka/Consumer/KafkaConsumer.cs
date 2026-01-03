@@ -8,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -108,19 +109,23 @@ namespace ECommerce.Shared.Kafka.Consumer
         {
             // hardcode max attempts
             const int maxAttempts = 3;
-            var attempt = 0;
-            while (true)
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
             {
                 try
                 {
                     await ProcessByTopicAsync(cr.Topic, cr.Message.Key, cr.Message.Value, ct);
                     return;
                 }
-                catch (Exception) when (++attempt < maxAttempts)
+                catch (Exception ex) when (++attempt < maxAttempts)
                 {
+                    _logger.LogWarning(ex, 
+                        "Kafka handler failed (attempt {Attempt}/{MaxAttempts}). Will retry. Topic={Topic} Partition={Partition} Offset={Offset} Key={Key}", 
+                        attempt, maxAttempts, cr.Topic, cr.Partition.Value, cr.Offset.Value, cr.Message.Key
+                    );
                     await Task.Delay(100, ct);
                 }
             }
+            throw new InvalidOperationException("Kafka processing failed with unknown error.");
         }
 
 
