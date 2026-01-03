@@ -193,7 +193,6 @@ Current DLQ logic only handles handler failures. Invalid json or event messages 
 
 Future extension: Explicit event message validation. Erroneous event message or invalid JSON to be routed to a DLQ for reprocessing or observation
 
-
 ## 3) Outbox Pattern
 Current design publishes events after DB write. It's possible for a DB write without an event publishing to occur. 
 This is fine for now as there are no downstream logic relying on successful publishing. If there are downstream logics that rely on event publishes after DB writes (creating a payment after an order is submitted etc.), this current design will not work
@@ -203,10 +202,8 @@ Future extension: Outbox table + background publisher
 ## 4) Health Checks
 Future extension: Endpoints for service liveness checkes, and external service readiness (Kafka connectivity, database connectivity if using a real DB)
 
-
-## 5) OpenTelemetry / Tracing
-Future extension: Can be added for distributed tracing, kafka spans, HTTP request correlation
-
+## 5) Monitoring & Logging
+Future extension: OpenTelemetry / Tracing, centralised logging via the ELK stack, routing monitoring metrics to visual layers like Prometheus + Grafana
 
 ## 6) Specific service logic: User Existence Validation in Order Service 
 Currently not enforced to avoid synchronous coupling
