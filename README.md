@@ -172,7 +172,6 @@ dotnet test
 ```
 
 ## Stop Everything
-## Start Everything
 You may run the following command from the project root (/GIC_TakeHomeTest)
 ```
 docker compose down
