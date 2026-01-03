@@ -7,6 +7,7 @@ using ECommerce.Shared.Kafka.Interfaces;
 using ECommerce.Shared.Kafka.Options;
 using ECommerce.Shared.Kafka.Producer;
 using ECommerce.Shared.Middleware;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -27,8 +28,45 @@ namespace ECommerce.OrderService
                 .WriteTo.Console();
             });
 
-            // Controller endponts + swagger
-            builder.Services.AddControllers();
+
+            // Catch boundary errors 
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        // request logger services
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                        logger.LogWarning("Invalid request payload at {Path}", context.HttpContext.Request.Path);
+
+                        var errors = context.ModelState
+                            .Where(e => e.Value?.Errors.Count > 0)
+                            .SelectMany(kvp => kvp.Value!.Errors.Select(err => new
+                            {
+                                Field = kvp.Key,
+                                Message = err.ErrorMessage
+                            }))
+                            .Where(e => e.Field != "orderDto") // remove this error to avoid confusion
+                            .ToList();
+
+                        var problem = new ProblemDetails
+                        {
+                            Status = StatusCodes.Status400BadRequest,
+                            Title = "Invalid request payload",
+                            Detail = "The request body is malformed or contains invalid values.",
+                            Instance = context.HttpContext.Request.Path
+                        };
+
+                        problem.Extensions["errors"] = errors;
+
+                        return new BadRequestObjectResult(problem)
+                        {
+                            ContentTypes = { "application/problem+json" }
+                        };
+                    };
+                });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
