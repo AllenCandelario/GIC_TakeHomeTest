@@ -1,5 +1,5 @@
-# 🛒 GIC's Take-home assignment: E-Commerce Microservices Demo (.NET 8, Kafka, Docker)
-This repository contains a microservices-based e-commerce system that demonstrates clean architecture, event-driven communication using Kafka, structured logging, and a test-driven approach, while intentionally documenting tradeoffs and future extensions.
+# 🛒 GIC's Take-home assignment: E-Commerce Microservices Demo 
+This repository contains a microservices-based e-commerce system (.NET 8, Kafka, Docker) that demonstrates clean architecture, event-driven communication using Kafka, structured logging, and a test-driven approach, while intentionally documenting tradeoffs and future extensions.
 
 ---
 
@@ -9,7 +9,7 @@ This repository contains a microservices-based e-commerce system that demonstrat
 
 - User Service (.NET 8 Web API)
 - Order Service (.NET 8 Web API)
-- Shared Library (.NET 8 Class Library, contains Kafka objects, Middleware, Exceptions)
+- Shared Library (.NET 8 Class Library, contains Kafka abstrations, Middleware, Exceptions)
 - Kafka Broker (event-driven communication)
 - Automated Tests (xUnit, Moq, Testcontainers)
 - Frontend UI (React + Vite + TypeScript)
