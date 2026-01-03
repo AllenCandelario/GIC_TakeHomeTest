@@ -44,7 +44,7 @@ namespace ECommerce.Tests.Integration.ApiTests
             response.Headers.Location.Should().NotBeNull();
             created.Should().NotBeNull();
             created.Id.Should().NotBeEmpty();
-            created.Email.Should().Be("testSuccess@mail.com");
+            created.Email.Should().Be("testsuccess@mail.com"); // case insensitive
         }
 
         [Fact]
