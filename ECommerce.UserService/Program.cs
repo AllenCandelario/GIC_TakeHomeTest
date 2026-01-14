@@ -17,9 +17,24 @@ namespace ECommerce.UserService
     {
         public static void Main(string[] args)
         {
+            /* Pre-build order, generally doesn't matter
+             * 1. Create builder
+             * 2. Logging
+             * 3. Configuration binding esp if using options pattern
+             * 4. Framework services: AddControllers, Swagger, CORS, AuthN/AuthZ, Health checks etc.
+             * 5. App services: repository, business logic etc.
+             * 6. Infra services: DbContext, Kafka Producer, external clients etc.
+             * 7. Hosted/BG services
+             */
+
+            #region 1. Create builder. Eager loads config (appsettings, env vars etc.)
+
             var builder = WebApplication.CreateBuilder(args);
 
-            // Serilog
+            #endregion
+
+            #region 2. Logging. Use Serilog with enrichment
+            
             builder.Host.UseSerilog((context, loggerConfig) =>
             {
                 loggerConfig.ReadFrom.Configuration(context.Configuration)
@@ -28,7 +43,34 @@ namespace ECommerce.UserService
                 .WriteTo.Console();
             });
 
-            // Catch boundary errors 
+            #endregion
+
+            #region 3. Configuration binding
+            
+            // Kafka 
+            builder.Services.AddOptions<KafkaConsumerConfigOptions>()
+                .Bind(builder.Configuration.GetSection("Kafka:Consumer"))
+                .Validate(o =>
+                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
+                    !string.IsNullOrWhiteSpace(o.GroupId) &&
+                    o.Topics is { Length: > 0 } &&
+                    o.Topics.All(t => !string.IsNullOrWhiteSpace(t)),
+                    "Kafka:Consumer config invalid")
+                .ValidateOnStart();
+
+            builder.Services.AddOptions<KafkaProducerConfigOptions>()
+                .Bind(builder.Configuration.GetSection("Kafka:Producer"))
+                .Validate(o =>
+                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
+                    !string.IsNullOrWhiteSpace(o.ClientId),
+                    "Kafka:Producer config invalid")
+                .ValidateOnStart();
+
+            #endregion
+
+            #region 4. Framework services
+
+            // AddControllers + additional boundary configuration to match exception handling errors
             builder.Services.AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
                 {
@@ -66,40 +108,9 @@ namespace ECommerce.UserService
                     };
                 });
 
+            // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            // DI services
-            builder.Services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("UsersDb"));
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserService, Application.Services.UserService>();
-
-            // Kafka
-            builder.Services.AddOptions<KafkaConsumerConfigOptions>()
-                .Bind(builder.Configuration.GetSection("Kafka:Consumer"))
-                .Validate(o =>
-                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
-                    !string.IsNullOrWhiteSpace(o.GroupId) &&
-                    o.Topics is { Length: > 0 } &&
-                    o.Topics.All(t => !string.IsNullOrWhiteSpace(t)),
-                    "Kafka:Consumer config invalid")
-                .ValidateOnStart();
-
-            builder.Services.AddOptions<KafkaProducerConfigOptions>()
-                .Bind(builder.Configuration.GetSection("Kafka:Producer"))
-                .Validate(o =>
-                    !string.IsNullOrWhiteSpace(o.BootstrapServers) &&
-                    !string.IsNullOrWhiteSpace(o.ClientId),
-                    "Kafka:Producer config invalid")
-                .ValidateOnStart();
-
-            // Kafka producer singleton
-            builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
-
-            // Kafka consumer hosted service
-            builder.Services.AddHostedService<KafkaConsumer>();
-
-            builder.Services.AddKeyedScoped<IKafkaEventHandler, OrderCreatedEventHandler>("order.created.v1");
 
             // CORS
             builder.Services.AddCors(options =>
@@ -112,8 +123,39 @@ namespace ECommerce.UserService
                 });
             });
 
+            #endregion
+
+            #region 5. App services
+
+            // Repository
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            
+            // Business logic
+            builder.Services.AddScoped<IUserService, Application.Services.UserService>();
+            builder.Services.AddKeyedScoped<IKafkaEventHandler, OrderCreatedEventHandler>("order.created.v1"); // key to match kafka topic
+
+            #endregion
+
+            #region 6. Infra services
+
+            // DbContext
+            builder.Services.AddDbContext<UserDbContext>(options => options.UseInMemoryDatabase("UsersDb"));
+
+            // Kafka producer 
+            builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
+
+            #endregion
+
+            #region 7. Hosted / BG services
+
+            // Kafka consumer hosted service
+            builder.Services.AddHostedService<KafkaConsumer>();
+
+            #endregion
+
 
             var app = builder.Build();
+
 
             app.UseSerilogRequestLogging();
 

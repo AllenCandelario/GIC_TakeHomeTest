@@ -3,20 +3,20 @@ services:
     image: apache/kafka:latest
     container_name: ecommerce-kafka
     environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: "broker,controller"
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_NODE_ID: 1 # unique id
+      KAFKA_PROCESS_ROLES: "broker,controller" # KRaft mode, single node acts as both broker (handles reads & writes) and controller (cluster metadata leader)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093" # node with unique id = 1 reachable at kafka:9093
 
-      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
-      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093" # address binding, 0.0.0.0 = all interfaces, broker on 9092, controller on 9093
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092" # tells clients to connect on kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT" # map listener names to protocol type. Using plaintext everywhere
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER" # tells kafka which listener is used for controller quorom communication
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT" # tells brokers which listener is used for broker-to-broker comms. Currently only have 1 broker
 
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true" # if a producer / consumer references a topic that doesnt exist, kafka will auto-create it
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # consumer will offset topic replication factor, stick to 1 since 1 broker
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 # consumer will offset...., stick to 1 since 1 broker
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 # use 1 for single node
     ports:
       - "9092:9092"
 
@@ -31,14 +31,14 @@ services:
     ports:
       - "8085:8080"
 
-  userservice:
-    build:
-      context: .
-      dockerfile: ECommerce.UserService/Dockerfile
+  userservice:  
+    build: 
+      context: . # docker-compose location
+      dockerfile: ECommerce.UserService/Dockerfile # Dockerfile location
     container_name: ecommerce-userservice
-    depends_on:
-      - kafka
-    environment:
+    depends_on: # ensures listed services are started before this service starts (does not guarantee health)
+      - kafka 
+    environment: # similar to appsettings. double underscore translates to colons : in .net config binding. Overrides listed env vars, the rest comes from appsettings.json
       - ASPNETCORE_ENVIRONMENT=Development
       - Kafka__Consumer__BootstrapServers=kafka:9092
       - Kafka__Consumer__GroupId=user-service
@@ -48,7 +48,7 @@ services:
       - Kafka__Topics__UserCreatedTopic=user.created.v1
       - Kafka__Topics__OrderCreatedTopic=order.created.v1
       - Kafka__Topics__DlqTopic=user-service.dlq.v1
-    ports:
+    ports: # host port 5001 forwards to container port 8080 (Kestrel inside container)
       - "5001:8080"
 
   orderservice:
